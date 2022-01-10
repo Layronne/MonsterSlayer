@@ -1,131 +1,174 @@
-'use strict'
+"use strict";
 
-const start = document.querySelector('.start');
-const commandeButton = document.querySelector('.commandbutton');
-const attackButton = document.querySelector('.attackbutton');
-const specialAttack = document.querySelector('.specialbutton');
-const healButton = document.querySelector('.heal');
-const giveUpButton = document.querySelector('.giveup');
-const hpBarrePlayer = document.querySelector('.hpbarreplayer');
-const hpBarreMonster = document.querySelector('.hpbarremonster');
-const log = document.querySelector('.log')
+let buttons = document.getElementById('buttons');
+let startButton = document.querySelector('.start');
+startButton.addEventListener('click', start);
+let attackButton = document.querySelector('.attack');
+let specialButton = document.querySelector('.specialAttack');
+let healButton = document.querySelector('.heal');
+let log = document.querySelector(".log");
+let turn = document.createElement("ul");
+log.append(turn);
+buttons.hidden = true;
 
-let lifePLayer = 100;
-let dammagePlayer = 0;
-let lifeMonster = 100;
-let dammageMonster = 0;
-
-
-
-
-    function create(element) {
-        return document.createElement(element)
-}
-
-class ZoneLog {
-
-    zone(dammagePlayer, dammageMonster, end = false, heal = false) {
-        if(!end) {
-            const player = create('p');
-            const monster = create('p');
-            player.innerText = !heal? `vous avez inflige ${dammagePlayer} de degat`:`vous vous etes soigne de ${dammagePlayer} points de vie`;
-            player.setAttribute('class', !heal?'playerAction':'playerHeal1')
-            monster.innerText = `le monstre vous a inflige ${dammageMonster} point de degats`;
-            monster.setAttribute('class', 'monsterAction');
-            log.appendChild(player);
-            log.appendChild(monster);
-        } else {
-            log.innerHTML = '';
-        }
-    }
-}
-
-class Surrender extends ZoneLog {
-
-    giveUp( win = false, winner = undefined) {
-        lifePLayer = 100;
-        lifeMonster = 100;
-        hpBarrePlayer.style.width = `${lifePLayer}/100`;
-        hpBarreMonster.style.width = `${lifeMonster}/100`
-        hpBarrePlayer.childNodes[1].innerText = `${lifePLayer}/100`
-        hpBarreMonster.childNodes[1].innerText = `${lifeMonster}/100`
-        commandeButton.style.display = 'block';
-        start.style.display = 'none';
-        super.zone(0, 0, true);
-
-        if(!win) {
-            alert('GAME OVER');
-        } else if(win && Winner) {
-            alert(`The Winner is ${winner}`)
-        }
-    }
-}
-
-class Game extends Surrender {
-
-    play(event) {
-        event.stop();
-        start.style.display = 'none';
-        commandeButton.style.display = 'block';
+class Personnage {
+    
+    constructor(name, pv, dammage) {
+        this.name = name;
+        this.pv = pv;
+        this.progressBar();
+        this.dammage = dammage;
     }
 
-    dpsFunction(event) {
-        event.stop();
-        dammageMonster = Math.floor(Math.random()*(10 - 3) + 3);
-        dammagePlayer = Math.floor(Math.random()*(10 - 5) + 5);
-        lifePLayer = lifePLayer - dammagePlayer;
-        lifeMonster = lifeMonster - dammageMonster;
-        hpBarrePlayer.style.width = `${lifePLayer}/100`;
-        hpBarreMonster.style.width = `${lifeMonster}/100`;
-        hpBarrePlayer.childNodes[1].innerText = `${lifePLayer}/100`;
-        hpBarreMonster.childNodes[1].innerText = `${lifeMonster}/100`;
-        super.zone(dammageMonster,dammagePlayer);
-
-        if(lifePLayer <= 0 || lifeMonster <= 0) {
-            let winner = lifePLayer <= 0 ? 'Monstre' : 'joueur';
-            super.giveUp(true, winner);
-        }
-
+    attack() {
+        let dmg = Math.floor(Math.random() * ((10 - this.dammage) + 1) + this.dammage);
+        this.li("attack", dmg);
+        return dmg;
     }
 
-    specialDpsFunction(event) {
-        event.stop();
-        dammagePlayer = Math.floor(Math.random() * (20 - 5) + 5);
-        dammageMonster = Math.floor(Math.random() * (10 - 5) + 5);
-        lifePLayer = lifePLayer - dammagePlayer;
-        lifeMonster = lifeMonster - dammageMonster;
-        hpBarrePlayer.style.width = `${lifePLayer}/100`;
-        hpBarreMonster.style.width = `${lifeMonster}/100`;
-        hpBarrePlayer.childNodes[1].innerText = `${lifePLayer}/100`;
-        hpBarreMonster.childNodes[1].innerText = `${lifeMonster}/100`;
-        super.zone9(dammageMonster, dammagePlayer);
-
-        if (lifePLayer <= 0 || lifeMonster <= 0) {
-            let winner = lifePLayer <= 0 ? 'Monstre' : 'Joueur';
-            super.giveUp(true, winner);
+    progressBar() {
+        let string;
+        if(this.name == "YOU") {
+            string = "pvYou";
+        } else if(this.name == "MONSTER") {
+            string = "pvMonster";
         }
+        this.pvSpan = document.querySelector("." + string);
+        this.progress = document.getElementById(string);
+        this.pvSpan.innerHTML = this._pv;
+        this.progress.value  = this._pv;
     }
 
-    healfunction(event) {
-        event.stop();
-
-        if( lifeMonster < 100 && lifePLayer < 100) {
-            dammagePlayer = Math.floor(Math.random() * (10 - 5) + 5);
-            lifePLayer = lifePLayer - dammagePlayer;
-            hpBarrePlayer.style.width = `${lifePLayer}/100`;
-            lifePLayer = lifePLayer + heal;
-            hpBarrePlayer.style.width = lifePLayer >= 100 ? '100/100' : `${lifePLayer}/100`;
-            hpBarrePlayer.childNodes[1].innerText = lifePLayer >= 100 ? '100/100' : `${lifePLayer}/100`;
-            super.zone(heal,dammagePlayer,false,true);
-
+    li(key, value) {
+        let txt;
+        let li = document.createElement("li");
+        if(this.name == "YOU") {
+            li.classList.add("blue");
+        } else if(this.name == "MONSTER") {
+            li.classList.add("red");
         }
+
+        switch (key) {
+            case "attack":
+                txt = this.name + " hits FOR " + value; 
+                break;
+                
+            case "specialAttack":
+                txt = this.name + " hits HARD FOR " + value;
+                break;
+    
+            case "heal":
+                txt = this.name + " HEALS FOR " + value;
+                break;
+        }
+
+        let text = document.createTextNode(txt);
+        li.append(text);
+        turn.append(li);
+    }
+
+    get pv() {
+        return this._pv;
+    }
+
+    set pv(value) {
+        if(value < 0) {
+            value = 0;
+        } else if(value >= 100) {
+            value = 100;
+        }
+        this._pv = value;
+        this.progressBar();
+        this.win();
+    }
+    
+    win() {
+        if( this._pv <= 0){
+            if(confirm (this.name + " loose the game, new game?")){
+                turn.innerHTML = "";
+                buttons.hidden = true;
+                startButton.hidden = false;
+            }else{
+                attackButton.disabled = true;
+                specialButton.disabled = true;
+                healButton.disabled = true;
+            }
+        } 
     }
 
 }
 
-giveUpButton.addEventListener('click', Game.giveUp);
-healButton.addEventListener('click', Game.healfunction)
-specialAttack.addEventListener('click', Game.specialDpsFunction);
-attackButton.addEventListener('click', Game.dpsFunction)
-start.addEventListener('click', Game.play)
+class You extends Personnage {
 
+    specialAttack() {
+        let special = Math.floor(Math.random() * ((20 - 10) + 1) + 10);
+        this.li("specialAttack", special);
+        return special;
+    }
+
+    heal() {
+        this.pv += 10;
+        this.li("heal", 10);
+    }
+}
+
+function start() {
+    let you = new You("YOU", 100, 3);
+    let monster = new Personnage("MONSTER", 100, 5);
+
+    buttons.hidden = false;
+    startButton.hidden = true;
+
+    attackButton.disabled = false;
+    specialButton.disabled = false;
+    healButton.disabled = false;
+
+    new Actions(buttons, you, monster);
+}
+
+
+
+
+class Actions {
+    constructor(elem, you, monster) {
+        this.you = you;
+        this.monster = monster;
+        this._elem = elem;
+        elem.onclick = this.onClick.bind(this);
+    }
+
+    attack() {
+        this.monster.pv -= this.you.attack();
+        if(this.monster.pv > 0) {
+            this.you.pv -= this.monster.attack();
+        }
+    }
+
+    specialAttack() {
+        this.monster.pv -= this.you.specialAttack();
+        if(this.monster.pv > 0) {
+            this.you.pv -= this.monster.attack();
+        }
+    }
+
+    heal() {
+        this.you.heal();
+        this.you.pv -= this.monster.attack();
+        this.monster.pv;
+    }
+
+    giveUp() {
+        if(confirm("YOU are give up, new game?")){
+            turn.innerHTML = "";
+            buttons.hidden = true;
+            startButton.hidden = false; 
+        }
+    }
+
+    onClick(event) {
+        let action = event.target.dataset.action;
+        if(action) {
+            this[action]();
+        }
+    };
+}
