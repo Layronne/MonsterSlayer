@@ -1,4 +1,3 @@
-
 * {
     margin: 0;
     padding: none;
@@ -11,14 +10,14 @@
 }
 
 .player {
-    margin: 1em;
-    border: solid rgb(105, 105, 105);
-    color: white;
-    width: 25%;
-    height: 2rem;
-    background-color:rgb(194, 194, 194);
-
+ margin: 1em;
+ color: black;
+ width: 25%;
+ height: 2rem;
+ background-color: chartreuse;
+ 
 }
+
 
 .hpbarreplayer {
     background-color: yellowgreen;
@@ -32,11 +31,10 @@
 
 .monster {
     margin: 1em;
-    border: solid rgb(105, 105, 105);
-    color: white;
+    color: rgb(0, 0, 0);
     width: 25%;
     height: 2rem;
-    background-color:rgb(194, 194, 194);
+    background-color:rgb(187, 12, 12);
 }
 
 .hpbarremonster {
@@ -65,7 +63,7 @@
     border-radius: 2vh;
 }
 
-.attackbutton {
+.attack{
     background: red;
     width: 25%;
     height: 2rem;
@@ -73,7 +71,7 @@
 
 }
 
-.specialbutton {
+.specialAttack {
     background: rgb(245, 245, 171);
     width: 30%;
     height: 2rem;
@@ -89,7 +87,7 @@
 
 }
 
-.giveup {
+.giveUp {
     background: brown;
     width: 30%;
     height: 2rem;
@@ -103,4 +101,9 @@
     justify-content: center;
     flex-direction: column;
     margin-top: 2rem;
+}
+
+li {
+    display: flex;
+    justify-content: center;
 }
