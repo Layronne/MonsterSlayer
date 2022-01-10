@@ -2,7 +2,6 @@
 
 let buttons = document.getElementById('buttons');
 let startButton = document.querySelector('.start');
-startButton.addEventListener('click', start);
 let attackButton = document.querySelector('.attack');
 let specialButton = document.querySelector('.specialAttack');
 let healButton = document.querySelector('.heal');
@@ -10,6 +9,8 @@ let log = document.querySelector(".log");
 let turn = document.createElement("ul");
 log.append(turn);
 buttons.hidden = true;
+
+startButton.addEventListener('click', start);
 
 class Personnage {
     
